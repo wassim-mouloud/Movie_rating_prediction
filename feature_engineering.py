@@ -29,36 +29,46 @@ def encode_genres(df: pd.DataFrame) -> pd.DataFrame:
 def encode_title(df: pd.DataFrame, max_features: int = 100) -> pd.DataFrame:
     """
     Encode la colonne 'Title' avec TF-IDF et ajoute 'Title_Word_Count' et 'Title_Char_Count'.
+    Remplace les titres vides par une valeur par défaut afin d'éviter un vocabulaire vide.
     """
-    titles = df['Title'].fillna("")
+    titles = df['Title'].fillna("").apply(lambda x: x if x.strip() != "" else "vide")
+    
     vectorizer = TfidfVectorizer(max_features=max_features)
     title_tfidf = vectorizer.fit_transform(titles)
+    
     title_df = pd.DataFrame(title_tfidf.toarray(),
                             columns=[f"Title_{word}" for word in vectorizer.get_feature_names_out()],
                             index=df.index)
+    
     df = pd.concat([df, title_df], axis=1)
+    # Extraction des métriques textuelles
     df['Title_Word_Count'] = titles.apply(lambda x: len(x.split()))
     df['Title_Char_Count'] = titles.apply(lambda x: len(x))
     print("Encodage de 'Title' avec TF-IDF et ajout de 'Title_Word_Count' et 'Title_Char_Count' effectués.")
     df = df.drop(columns=['Title'])
     return df
 
+
 def encode_description(df: pd.DataFrame, max_features: int = 200) -> pd.DataFrame:
     """
     Encode la colonne 'Description' avec TF-IDF et ajoute 'Description_Word_Count' et 'Description_Char_Count'.
+    Remplace les descriptions vides par une valeur par défaut afin d'éviter un vocabulaire vide.
     """
-    descriptions = df['Description'].fillna("")
+    descriptions = df['Description'].fillna("").apply(lambda x: x if x.strip() != "" else "vide")
     vectorizer = TfidfVectorizer(max_features=max_features)
     desc_tfidf = vectorizer.fit_transform(descriptions)
+    
     desc_df = pd.DataFrame(desc_tfidf.toarray(),
                            columns=[f"Desc_{word}" for word in vectorizer.get_feature_names_out()],
                            index=df.index)
+    
     df = pd.concat([df, desc_df], axis=1)
     df['Description_Word_Count'] = descriptions.apply(lambda x: len(x.split()))
     df['Description_Char_Count'] = descriptions.apply(lambda x: len(x))
     print("Encodage de 'Description' avec TF-IDF et ajout de 'Description_Word_Count' et 'Description_Char_Count' effectués.")
     df = df.drop(columns=['Description'])
     return df
+
 
 def encode_directed_by(df: pd.DataFrame) -> pd.DataFrame:
     """

@@ -16,8 +16,9 @@ SELECTED_FEATURES = [
 
 def process_input_data(input_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Applique manuellement les étapes de nettoyage et de feature engineering sur les données brutes
-    puis ne conserve que les variables sélectionnées utilisées pour l'entraînement.
+    Applique manuellement les étapes de nettoyage et de feature engineering sur les données brutes,
+    puis conserve uniquement les variables sélectionnées utilisées lors de l'entraînement (à l'exclusion de la cible).
+    Les colonnes manquantes sont ajoutées avec la valeur 0.
     """
     # Appliquer le nettoyage
     df = clean_data(input_df)
@@ -26,13 +27,13 @@ def process_input_data(input_df: pd.DataFrame) -> pd.DataFrame:
     # Imputer les valeurs manquantes (si ce n'est pas déjà fait dans clean_data)
     df = impute_missing_values(df, strategy="median")
     
-    # Assurez-vous que la colonne 'Rating' est présente pour correspondre à l'ensemble des features.
-    if 'Rating' not in df.columns:
-        df['Rating'] = 0  # Valeur factice
+    # Définir la liste des features utilisées pour l'entraînement, sans la cible "Rating"
+    features_prediction = [col for col in SELECTED_FEATURES if col != "Rating"]
     
-    # Conserver uniquement les variables sélectionnées
-    df = df[SELECTED_FEATURES]
+    # Conserver uniquement les variables sélectionnées (ajoute 0 pour celles manquantes)
+    df = df.reindex(columns=features_prediction, fill_value=0)
     return df
+
 
 st.title("Prédicteur de Rating de Films")
 
@@ -71,7 +72,3 @@ if st.button("Prédire le rating"):
     prediction = model.predict(processed_input)
     st.write("Le rating prédit est :", np.round(prediction[0], 2))
     
-    # Affichage d'une comparaison des valeurs (pour debug)
-    comparison_df = processed_input.copy()
-    comparison_df["Prédiction"] = prediction
-    st.write("Comparaison (pour debug) :", comparison_df[SELECTED_FEATURES[:-1] + ["Prédiction"]].head())
