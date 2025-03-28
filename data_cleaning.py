@@ -135,10 +135,10 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = convert_persons_voted(df)
     df = convert_duration(df)
 
-    # if 'Duration_Min' in df.columns:
-    #     df = remove_outliers(df, 'Duration_Min')
-    # if 'No of Persons Voted' in df.columns:
-    #     df = remove_outliers(df, 'No of Persons Voted')
+    if 'Duration_Min' in df.columns:
+        df = remove_outliers(df, 'Duration_Min')
+    if 'No of Persons Voted' in df.columns:
+        df = remove_outliers(df, 'No of Persons Voted')
     
     # df = scale_data(df, columns=['Rating', 'No of Persons Voted', 'Duration_Min'], scaler_type="standard")
 
