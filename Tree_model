@@ -58,7 +58,6 @@ if __name__ == "__main__":
     
     evaluate_model(model, X_test, y_test)
     
-    # Prédictions et affichage de la comparaison dans le terminal
     y_pred = model.predict(X_test)
     comparison_df = pd.DataFrame({
         "Actual": y_test.reset_index(drop=True),

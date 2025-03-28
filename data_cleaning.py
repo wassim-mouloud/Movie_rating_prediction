@@ -4,7 +4,7 @@ import re
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer
-from sklearn.experimental import enable_iterative_imputer  # Nécessaire pour activer IterativeImputer
+from sklearn.experimental import enable_iterative_imputer  
 from sklearn.impute import IterativeImputer
 
 def drop_index_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -27,7 +27,6 @@ def clean_rating(df: pd.DataFrame) -> pd.DataFrame:
 
 def convert_persons_voted(df: pd.DataFrame) -> pd.DataFrame:
     if 'No of Persons Voted' in df.columns:
-        # Use pandas string replacement for a more robust conversion
         df['No of Persons Voted'] = df['No of Persons Voted'].astype(str).str.replace(r'[^\d]', '', regex=True)
         df['No of Persons Voted'] = pd.to_numeric(df['No of Persons Voted'], errors='coerce')
         print("Converted 'No of Persons Voted' to integer.")
@@ -114,7 +113,6 @@ def impute_missing_values_multiple(df: pd.DataFrame, n_imputations: int = 5, bas
     Returns:
         list: Une liste de DataFrames avec les valeurs manquantes imputées.
     """
-    # Sélectionner uniquement les colonnes numériques
     numeric_cols = df.select_dtypes(include=["number"]).columns
     imputed_datasets = []
     
@@ -155,14 +153,12 @@ def visualize_clean_data(df: pd.DataFrame) -> None:
     for col in numeric_cols:
         plt.figure(figsize=(10, 4))
         
-        # Histogram
         plt.subplot(1, 2, 1)
         plt.hist(df[col].dropna(), bins=30, color='skyblue', edgecolor='black')
         plt.title(f'Histogram of {col}')
         plt.xlabel(col)
         plt.ylabel("Frequency")
         
-        # Boxplot
         plt.subplot(1, 2, 2)
         plt.boxplot(df[col].dropna(), vert=False)
         plt.title(f'Boxplot of {col}')

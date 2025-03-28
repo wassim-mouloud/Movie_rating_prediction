@@ -3,9 +3,7 @@ import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# ---------------------------
-# Fonctions d'encodage et transformations de base
-# ---------------------------
+
 
 def encode_genres(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -41,7 +39,6 @@ def encode_title(df: pd.DataFrame, max_features: int = 100) -> pd.DataFrame:
                             index=df.index)
     
     df = pd.concat([df, title_df], axis=1)
-    # Extraction des métriques textuelles
     df['Title_Word_Count'] = titles.apply(lambda x: len(x.split()))
     df['Title_Char_Count'] = titles.apply(lambda x: len(x))
     print("Encodage de 'Title' avec TF-IDF et ajout de 'Title_Word_Count' et 'Title_Char_Count' effectués.")
@@ -117,9 +114,7 @@ def encode_categoricals(df: pd.DataFrame) -> pd.DataFrame:
     df = transform_votes(df)
     return df
 
-# ---------------------------
-# Transformations complémentaires
-# ---------------------------
+
 
 def extract_release_year(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -222,27 +217,6 @@ def compute_avg_word_length(df: pd.DataFrame) -> pd.DataFrame:
         print("Colonne 'Description' non trouvée.")
     return df
 
-# def extract_title_sentiment(df: pd.DataFrame) -> pd.DataFrame:
-#     """
-#     Calcule le score de sentiment de 'Title' à l'aide de TextBlob et ajoute 'Title_Sentiment'.
-#     (Note: TextBlob est principalement conçu pour l'anglais.)
-#     """
-#     try:
-#         from textblob import TextBlob
-#     except ImportError:
-#         print("TextBlob n'est pas installé. Installez-le pour utiliser l'analyse de sentiment.")
-#         return df
-
-#     if 'Title' in df.columns:
-#         df['Title_Sentiment'] = df['Title'].fillna("").apply(lambda x: TextBlob(x).sentiment.polarity)
-#         print("Extraction du sentiment du 'Title' effectuée.")
-#     else:
-#         print("Colonne 'Title' non trouvée.")
-#     return df
-
-# ---------------------------
-# Pipeline complet de feature engineering
-# ---------------------------
 
 def feature_engineering_pipeline(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -257,25 +231,18 @@ def feature_engineering_pipeline(df: pd.DataFrame) -> pd.DataFrame:
       - Calcul de la longueur moyenne des mots dans la description
       - Extraction du sentiment du titre
     """
-    # Encodage et transformations de base
     df = encode_categoricals(df)
-    # Transformations complémentaires
     df = extract_release_year(df)
     df = add_film_age(df)
     df = categorize_duration(df)
-    # Nouvelles extractions
     df = extract_release_day_of_week(df)
     df = extract_release_decade(df)
     df = count_directors(df)
     df = count_writers(df)
     df = compute_avg_word_length(df)
-    # df = extract_title_sentiment(df)
     print("Feature engineering pipeline complet terminé.")
     return df
 
-# ---------------------------
-# Bloc principal pour test (optionnel)
-# ---------------------------
 
 if __name__ == "__main__":
     file_path = "data/clean_data.csv"
@@ -294,7 +261,6 @@ if __name__ == "__main__":
     print("\nAperçu après feature engineering:")
     print(df_fe.head())
     
-    # Sauvegarder le résultat pour la modélisation
     output_file = "data/encoded_data.csv"
     df_fe.to_csv(output_file, index=False)
     print(f"\nLes données transformées ont été sauvegardées dans : {output_file}")

@@ -132,7 +132,6 @@ def rfe_feature_selection(df: pd.DataFrame, target: str, n_features_to_select: i
     selector.fit(X, y)
     
     selected_features = X.columns[selector.support_].tolist()
-    # S'assurer que la cible est incluse
     if target not in selected_features:
         selected_features.append(target)
     
@@ -174,7 +173,7 @@ def lasso_feature_selection(df: pd.DataFrame, target: str, cv: int = 5, random_s
 
 
 if __name__ == "__main__":
-    file_path = "data/encoded_data.csv"  # For example, the file output from your feature engineering
+    file_path = "data/encoded_data.csv"  
     try:
         df = pd.read_csv(file_path)
         print("Data loaded for feature selection.")
@@ -182,13 +181,10 @@ if __name__ == "__main__":
         print(f"Error loading data: {e}")
         exit(1)
     
-    # Preview the data before selection
     print("\nData preview before selection:")
     print(df.head())
     
-    # Apply the feature selection pipeline
     df_selected = feature_selection_pipeline(df, target="Rating", corr_threshold=0.1, multicol_threshold=0.9)
     
-    # Preview the data after selection
     print("\nData preview after selection:")
     print(df_selected.head())
